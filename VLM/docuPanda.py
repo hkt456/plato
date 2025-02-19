@@ -52,6 +52,18 @@ headers_std = {
 response_std = requests.post(url_std, json=payload_std, headers=headers_std)
 print(response_std.json())
 
+# Use standardization ID to get response
+standardization_id = response_std.json()['standardizationIds'][0]
+url_final = f"https://app.docupanda.io/standardization/{standardization_id}"
+
+headers_final = {
+    "accept": "application/json",
+    "X-API-Key": api_key
+}
+
+response_final = requests.get(url_final, headers=headers_final)
+print(response_final.json())
+
 ### Save output as .json file
 output_path = "output"  # Directory to store output
 if not os.path.exists(output_path):
