@@ -1,16 +1,15 @@
-# main.py
 import threading
 import json
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from tracker import ActiveTabTracker, tracking_loop
+from tracker import ActiveTabTracker, tracking_loop  # Your tracking module
+from session_analysis import SessionAnalysis         # Import the analysis class
+
 app = FastAPI()
 tracker_instance = None
 tracking_thread = None
 stop_event = None
-
-from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,7 +29,6 @@ def get_status():
         return {"running": True}
     else:
         return {"running": False}
-
 
 @app.post("/start_tracking")
 def start_tracking():
@@ -108,4 +106,98 @@ def get_usage_json():
         return data
     except Exception as e:
         return {"error": "Could not read tab_usage.json", "details": str(e)}
+
+@app.post("/analysis_report")
+async def generate_analysis_report(request: Request):
+    """
+    Generate an analysis report using the latest tracker data (from /usage_json),
+    a hardcoded pose_data, and a session goal provided by the user in the JSON payload.
+
+    Expects a JSON payload like:
+    {
+      "session_goal": "..."
+    }
+    """
+    # Parse the request JSON to retrieve session goal
+    data = await request.json()
+    session_goal = data.get("session_goal", "")
+
+    if session_goal == "":
+        return {"error": "Missing required field: session_goal."}
+
+    # Retrieve the latest tracker data from tab_usage.json
+    usage_response = get_usage_json()
+    if "error" in usage_response:
+        return {"error": "Could not retrieve tracker data from usage_json."}
+
+    tracker_data = usage_response  # The usage_json endpoint returns a dictionary if successful
+
+    # Hardcode the pose_data
+    pose_data = {
+        "Humpedback": 3.0,
+        "Wrong distance": 4.0,
+        "Shoulder deviation": 5.0
+    }
+
+    # Create the analysis report
+    analysis = SessionAnalysis(tracker_data, pose_data, session_goal)
+    report = analysis.get_analysis_report()
+
+    if report:
+        # Preprocess the report for Markdown rendering
+        markdown_report = (
+            report
+            .replace("\\r", "")
+            .replace("\\n\\n", "\n\n")
+            .replace("\\n", "  \n")
+        )
+        return {"analysis_report": markdown_report}
+    else:
+        return {"error": "Failed to generate analysis report."}
+
+@app.get("/analysis_report_test")
+def analysis_report_test():
+    """
+    Test endpoint to generate an analysis report using hardcoded JSON samples.
+    """
+    # Hardcoded sample JSON from the tracker
+    tracker_data = {
+        "https://chatgpt.com/c/67c2317b-594c-800b-b5d8-014c3e4fbc0b": {
+            "time": 3.0005178451538086,
+            "title": "https://chatgpt.com/c/67c2317b-594c-800b-b5d8-014c3e4fbc0b"
+        },
+        "http://127.0.0.1:8000/usage": {
+            "time": 8.001509189605713,
+            "title": "http://127.0.0.1:8000/usage"
+        },
+        "http://127.0.0.1:8000/usage_json": {
+            "time": 2.000476598739624,
+            "title": "http://127.0.0.1:8000/usage_json"
+        }
+    }
+
+    # Hardcoded sample JSON from pose detection
+    pose_data = {
+        "Humpedback": 3.0,
+        "Wrong distance": 4.0,
+        "Shoulder deviation": 5.0
+    }
+    
+    # Hardcoded session goal
+    session_goal = "Complete coding tasks efficiently"
+    
+    analysis = SessionAnalysis(tracker_data, pose_data, session_goal)
+    report = analysis.get_analysis_report()
+    
+    if report:
+        # Preprocess for Markdown rendering
+        markdown_report = (
+            report
+            .replace("\\r", "")
+            .replace("\\n\\n", "\n\n")
+            .replace("\\n", "  \n")
+        )
+        return {"analysis_report": markdown_report}
+    else:
+        return {"error": "Failed to generate analysis report."}
 
