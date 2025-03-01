@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "plato-be"
+version = "0.1.0"
+description = "BE Code of Plato for DLW"
+authors = ["hkt456 <tamhuynhkhac@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pychromedevtools = "^1.0.3"
+fastapi = "^0.115.10"
+uvicorn = "^0.34.0"
+websockets = "^15.0"
+matplotlib = "^3.10.1"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
