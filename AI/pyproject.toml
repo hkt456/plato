@@ -1,14 +1,13 @@
 [tool.poetry]
-name = "vlm"
+name = "aimodule"
 version = "0.1.0"
-description = ""
+description = "This folder contains the AI Module developed by Plato for DLW"
 authors = ["hkt456 <tamhuynhkhac@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-llama-cloud = "^0.1.12"
-llama-index = "^0.12.19"
+groq = "^0.18.0"
 
 
 [build-system]

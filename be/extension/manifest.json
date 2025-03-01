@@ -1,0 +1,24 @@
+{
+  "name": "Tab Focus Tracker",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "description": "Detect tab visibility changes and notify a local server.",
+  "permissions": [
+    "scripting",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html", 
+    "default_icon": "zen.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
+
