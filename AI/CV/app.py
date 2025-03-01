@@ -3,6 +3,7 @@ import cv2
 from .utilities import *
 
 
+
 model = YOLO('yolo11n-pose.pt')
 phone_detector = YOLO('yolov8n.pt')
 
@@ -51,7 +52,7 @@ def frame_processing(frame, y_std, eye_std, angle_std, y_tolerance, eye_toleranc
             wrong_dist = (not shoulder_detected(left_shoulder, right_shoulder))\
                 or wrong_distance_detection(eye_dist, eye_std, eye_tolerance)
             leaning_state = lean_detection(angle, angle_std, angle_tolerance)
-            
+
             frame = result.plot()
             return frame, y_state, wrong_dist, leaning_state
             
@@ -65,6 +66,6 @@ def phone_detection(frame):
                 phone_using = True
                 x1, y1, x2, y2 = map(int, box)
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                cv2.putText(frame, "Phone", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-    
+                cv2.putText(frame, "Phone", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)    
     return frame, phone_using
+
