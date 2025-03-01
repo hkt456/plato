@@ -47,6 +47,20 @@ async def video_stream(websocket: WebSocket):
     # Example: run for 10 seconds
     await video_analysis.work_tracking(websocket)
 
+@app.get("/current_state")
+def get_current_state():
+    """
+    Return the current posture states (humpbacked, wrong distance, shoulder deviated, and phone using)
+    of user as JSON file.
+    """
+    y_state, wrong_dist, leaning_state, phone_using = video_analysis.get_current_state()
+    return {
+        "Humpbacked": y_state,
+        "Wrong distance": wrong_dist,
+        "Shoulder deviated": leaning_state,
+        "Phone usage": phone_using
+    }
+
 @app.get("/get_summary")
 def get_summary(JSON_FILE_PATH: str = JSON_FILE_PATH):
     """
@@ -219,7 +233,8 @@ def analysis_report_test():
     pose_data = {
         "Humpedback": 3.0,
         "Wrong distance": 4.0,
-        "Shoulder deviation": 5.0
+        "Shoulder deviation": 5.0,
+        "Phone usage": 6.0
     }
     
     session_goal = "Complete coding tasks efficiently"
