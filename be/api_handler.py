@@ -12,14 +12,8 @@ from session_analysis import SessionAnalysis
 # 1) Import your new class
 from video_analysis import VideoAnalysis
 
-# -------------------------
-# MERGED FastAPI APPLICATION
-# -------------------------
 app = FastAPI()
 
-# ---------------------------------------------------------
-# Section 1: CORS and Global Variables from the Main Handler
-# ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -31,6 +25,7 @@ app.add_middleware(
 tracker_instance = None
 tracking_thread = None
 stop_event = None
+isRunning = False
 
 
 # Create an instance of the VideoAnalysis class
@@ -45,7 +40,21 @@ async def video_stream(websocket: WebSocket):
     """
     await websocket.accept()
     # Example: run for 10 seconds
-    await video_analysis.work_tracking(websocket, session_time=10)
+    await video_analysis.work_tracking(websocket)
+
+@app.get("/current_state")
+def get_current_state():
+    """
+    Return the current posture states (humpbacked, wrong distance, shoulder deviated, and phone using)
+    of user as JSON file.
+    """
+    y_state, wrong_dist, leaning_state, phone_using = video_analysis.get_current_state()
+    return {
+        "Humpbacked": y_state,
+        "Wrong distance": wrong_dist,
+        "Shoulder deviated": leaning_state,
+        "Phone usage": phone_using
+    }
 
 @app.get("/get_summary")
 def get_summary(JSON_FILE_PATH: str = JSON_FILE_PATH):
@@ -59,25 +68,19 @@ def get_summary(JSON_FILE_PATH: str = JSON_FILE_PATH):
     except Exception as e:
         return {"error": f"Could not read {JSON_FILE_PATH}", "details": str(e)}
 
-
-
 @app.get("/status")
 def get_status():
     """
     Return whether the tracking thread is currently running.
     """
-    global tracking_thread
-    if tracking_thread and tracking_thread.is_alive():
-        return {"running": True}
-    else:
-        return {"running": False}
+    global isRunning
+    return {"running": isRunning}
 
 @app.post("/start_tracking")
 def start_tracking():
-    global tracker_instance, tracking_thread, stop_event
-    if tracking_thread and tracking_thread.is_alive():
-        return {"status": "already tracking"}
-
+    global tracker_instance, tracking_thread, stop_event, isRunning
+    isRunning = True
+    
     tracker_instance = ActiveTabTracker()
     stop_event = threading.Event()
 
@@ -91,13 +94,16 @@ def start_tracking():
 
 @app.post("/stop_tracking")
 def stop_tracking():
-    global tracking_thread, stop_event
-    if not tracking_thread or not tracking_thread.is_alive():
-        return {"status": "no active tracking"}
+    global tracking_thread, stop_event, isRunning
 
-    stop_event.set()
-    tracking_thread.join()
-    tracking_thread = None
+    isRunning = False
+
+    if tracking_thread and tracking_thread.is_alive():
+        stop_event.set()
+        tracking_thread.join()
+        tracking_thread = None
+
+
     return {"status": "tracking stopped"}
 
 @app.post("/visibility")
@@ -148,6 +154,7 @@ def get_usage_json():
         return data
     except Exception as e:
         return {"error": "Could not read tab_usage.json", "details": str(e)}
+
 
 @app.post("/analysis_report")
 async def generate_analysis_report(request: Request):
@@ -219,7 +226,8 @@ def analysis_report_test():
     pose_data = {
         "Humpedback": 3.0,
         "Wrong distance": 4.0,
-        "Shoulder deviation": 5.0
+        "Shoulder deviation": 5.0,
+        "Phone usage": 6.0
     }
     
     session_goal = "Complete coding tasks efficiently"

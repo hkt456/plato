@@ -1,47 +1,57 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+const SERVER_URL = "http://127.0.0.1:8000";
+
 const SessionTimer = () => {
   const router = useRouter();
-  const [time, setTime] = useState(3); // 3 seconds for testing
+  const [time, setTime] = useState(10); // 60 seconds for testing
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
+  // On mount, start tracking if not already stopped
   useEffect(() => {
-    // -- 1. Set up the WebSocket to the FastAPI /video endpoint.
-    const ws = new WebSocket("ws://localhost:8000/video"); 
-    // If your server is running on a different domain or port, adjust accordingly.
+    // Mark session as running
+    sessionStorage.setItem("running", "true");
 
-    // Called when the WebSocket is successfully connected
+    // Start the browser activity tracking via the FastAPI endpoint
+    fetch(`${SERVER_URL}/start_tracking`, {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => console.log("Tracking started:", data))
+      .catch((err) => console.error("Error starting tracking:", err));
+  }, []);
+
+  useEffect(() => {
+    // Open the WebSocket connection
+    const ws = new WebSocket("ws://localhost:8000/video");
+
     ws.onopen = () => {
       console.log("WebSocket connected to /video");
     };
 
-    // Called whenever the server sends a message (base64-encoded frame)
     ws.onmessage = (event) => {
-      // The event.data should be a base64 string representing the JPEG frame.
-      // We convert it into a data URL so <img> can display it.
       const base64Data = event.data as string;
       setImgSrc(`data:image/jpeg;base64,${base64Data}`);
     };
 
-    // Called if the WebSocket is closed or an error occurs
     ws.onclose = () => {
       console.log("WebSocket connection closed");
     };
+
     ws.onerror = (err) => {
       console.error("WebSocket error:", err);
     };
 
-    // Cleanup function when the component unmounts
+    // Clean up on unmount
     return () => {
       ws.close();
     };
   }, []);
 
   useEffect(() => {
-    // -- 2. Session timer logic
     if (time === 0) {
       handleTimeEnd();
       return;
@@ -52,9 +62,25 @@ const SessionTimer = () => {
     return () => clearInterval(timer);
   }, [time]);
 
+  const stopTracking = () => {
+    // Stop tracking via FastAPI endpoint
+    fetch(`${SERVER_URL}/stop_tracking`, {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => console.log("Tracking stopped:", data))
+      .catch((err) => console.error("Error stopping tracking:", err));
+  };
+
   const handleTimeEnd = () => {
-    // This triggers navigation to /analysis when the timer reaches 0
-    router.push("/analysis");
+    // This triggers navigation to /summary when the timer reaches 0
+    router.push("/summary");
+  };
+
+  const handleEndSession = () => {
+    sessionStorage.setItem("running", "false");
+    stopTracking();
+    router.push("/");
   };
 
   const formatTime = (seconds: number) => {
@@ -83,9 +109,9 @@ const SessionTimer = () => {
         <p className="mt-24 text-xl">Connecting to camera feed...</p>
       )}
 
-      {/* END SESSION Button */}
+      {/* End Session Button */}
       <button
-        onClick={() => router.push("/")}
+        onClick={handleEndSession}
         className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-2xl font-bold absolute bottom-20"
       >
         END SESSION
