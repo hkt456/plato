@@ -24,7 +24,7 @@ const PostureUI = () => {
     
     const fetchUsageData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/usage_json");
+        const response = await fetch("http://127.0.0.1:8000/usage");
         const data = await response.json();
         const formattedData = Object.keys(data).map((key) => ({
           name: data[key].title as string,
