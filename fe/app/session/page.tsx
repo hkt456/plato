@@ -1,27 +1,22 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const SessionTimer = () => {
   const router = useRouter();
-  const [time, setTime] = useState(3); // 3 seconds for testing
+  const [time, setTime] = useState(60); // 3 seconds for testing
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    // -- 1. Set up the WebSocket to the FastAPI /video endpoint.
     const ws = new WebSocket("ws://localhost:8000/video"); 
-    // If your server is running on a different domain or port, adjust accordingly.
 
-    // Called when the WebSocket is successfully connected
     ws.onopen = () => {
       console.log("WebSocket connected to /video");
     };
 
     // Called whenever the server sends a message (base64-encoded frame)
     ws.onmessage = (event) => {
-      // The event.data should be a base64 string representing the JPEG frame.
-      // We convert it into a data URL so <img> can display it.
       const base64Data = event.data as string;
       setImgSrc(`data:image/jpeg;base64,${base64Data}`);
     };

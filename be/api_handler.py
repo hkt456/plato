@@ -45,7 +45,7 @@ async def video_stream(websocket: WebSocket):
     """
     await websocket.accept()
     # Example: run for 10 seconds
-    await video_analysis.work_tracking(websocket, session_time=10)
+    await video_analysis.work_tracking(websocket)
 
 @app.get("/get_summary")
 def get_summary(JSON_FILE_PATH: str = JSON_FILE_PATH):
