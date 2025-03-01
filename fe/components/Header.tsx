@@ -26,7 +26,7 @@ const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void
 
 const Header = ({ navContents }: HeaderProps) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const popupRef = useRef<HTMLDivElement>(null); // Properly typed as HTMLDivElement
+  const popupRef = useRef<HTMLElement>(null); // Properly typed as HTMLElement
 
   // Close the popup when clicking outside
   useClickOutside(popupRef, () => {
@@ -70,7 +70,7 @@ const Header = ({ navContents }: HeaderProps) => {
           {/* Popup */}
           {isPopupVisible && (
             <div
-              ref={popupRef}
+              ref = {popupRef}
               className="absolute right-0 top-12 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
             >
               <div className="p-4">
