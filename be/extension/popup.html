@@ -2,29 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tab Focus Tracker</title>
+  <title>Session Timer</title>
   <style>
-    /* Reset some default margins/padding */
+    /* Reset default margins/padding */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-
     body {
-      width: 320px; /* typical Metamask popup width */
-      min-height: 400px;
+      width: 320px; /* typical extension popup width */
+      min-height: 200px;
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
       color: #333;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      position: relative;
+      justify-content: center;
+      padding: 10px;
     }
-
-    /* Header area with icon and title */
+    /* Header styling */
     .header {
       width: 100%;
       display: flex;
@@ -42,58 +40,15 @@
       font-weight: bold;
       color: #fff;
     }
-
-    /* Main card-like container */
-    .card {
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      width: 90%;
-      margin-top: 20px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 10px;
-      color: #555;
-    }
-
-    .status {
-      margin: 10px 0;
+    /* Timer (now used for status) display */
+    .timer {
+      font-size: 1.5rem;
       font-weight: bold;
-      color: #333;
-    }
-
-    /* Buttons */
-    .btn {
-      padding: 10px 20px;
-      margin: 5px 0;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background-color 0.2s ease;
-    }
-    .btn.start {
-      background-color: #2ecc71;
+      margin: 20px 0;
       color: #fff;
+      text-align: center;
     }
-    .btn.start:hover {
-      background-color: #27ae60;
-    }
-    .btn.stop {
-      background-color: #e74c3c;
-      color: #fff;
-    }
-    .btn.stop:hover {
-      background-color: #c0392b;
-    }
-
-    /* Footer or extra info */
+    /* Footer styling */
     .footer {
       margin-top: auto;
       padding: 10px;
@@ -105,25 +60,20 @@
   </style>
 </head>
 <body>
-  <!-- Header with icon and title -->
+  <!-- Header -->
   <div class="header">
     <img src="zen.png" alt="Icon" />
-    <h1>Tab Focus Tracker</h1>
+    <h1>Session Timer</h1>
   </div>
-
-  <!-- Main card content -->
-  <div class="card">
-    <h2>Track Your Tabs</h2>
-    <div class="status" id="status">Loading status...</div>
-    <button class="btn start" id="startBtn">Start Tracking</button>
-    <button class="btn stop" id="stopBtn">Stop Tracking</button>
-  </div>
-
+  
+  <div class="timer" id="timer">Checking session status...</div>
+  
+  <!-- Footer -->
   <div class="footer">
     <p>Developed by Plato</p>
   </div>
-
-  <!-- Link to your popup.js for logic -->
+  
+  <!-- Include popup.js -->
   <script src="popup.js"></script>
 </body>
 </html>
