@@ -1,61 +1,27 @@
-"use client"
+"use client";
 
-import React from 'react'
-import Footer from "@/components/Footer";
+import React from "react";
 import Header from "@/components/Header";
-import LeftPanelNavigation from "@/components/LeftPanelNavigation";
 import NavigationContent from "@/interfaces/NavigationContent";
-// import Image from "next/image";
-
-
+import StartSessionButton from "@/components/StartSessionButton";
 const navContents: NavigationContent[] = [
-  {
-    name: "Home",
-    link: "#home"
-  },
-  {
-    name: "About",
-    link: "#about"
-  },
-  {
-    name: "Projects",
-    link: "#projects"
-  },
-  {
-    name: "Contact",
-    link: "#contact"
-  }
-]
-
+  { name: "Insights", link: "projects" },
+];
 
 const Home = () => {
-
-  const [isOpenMenu, setIsOpenMenu] = React.useState(false);
-  const [item, setItem] = React.useState("");
-
-  React.useEffect(() => {
-    setItem(navContents.find(nav => location.hash.includes(nav.link ?? ''))?.link ?? navContents[0]?.link ?? '');
-  }, []);
-
   return (
-    <>
-      <div className='absolute w-full z-20'>
-        <Header navContents={navContents} currentPath={item} onChange={setIsOpenMenu} isOpenMenu={isOpenMenu} />
+    <div className="min-h-screen flex flex-col bg-[#fdf8fc]">
+      {/* Header */}
+      <div className="absolute w-full z-20">
+        <Header navContents={navContents} />
       </div>
-      <LeftPanelNavigation navContents={navContents} currentPath={item} onChange={setIsOpenMenu} isOpenMenu={isOpenMenu} />
-      <div className='relative w-screen h-screen overflow-hidden transition duration-300'>
-        <div className='w-full h-full overflow-auto'>
-          <div className='invisible'>
-            <Header />
-          </div>
-          <>
-            {/** Main contents here */}
-          </>
-          <Footer />
-        </div>
-      </div>
-    </>
-  )
-}
 
-export default Home
+      {/* Main Content */}
+      <div className="flex justify-center items-center h-screen bg-pink-50 relative">
+        <StartSessionButton className="absolute bottom-40" /> {/* Adjust position */}
+      </div>
+    </div>
+  );
+};
+
+export default Home;
