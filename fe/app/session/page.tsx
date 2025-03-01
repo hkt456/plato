@@ -3,10 +3,26 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+const SERVER_URL = "http://127.0.0.1:8000";
+
 const SessionTimer = () => {
   const router = useRouter();
-  const [time, setTime] = useState(60); // 60 seconds for testing
+  const [time, setTime] = useState(10); // 60 seconds for testing
   const [imgSrc, setImgSrc] = useState<string | null>(null);
+
+  // On mount, start tracking if not already stopped
+  useEffect(() => {
+    // Mark session as running
+    sessionStorage.setItem("running", "true");
+
+    // Start the browser activity tracking via the FastAPI endpoint
+    fetch(`${SERVER_URL}/start_tracking`, {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => console.log("Tracking started:", data))
+      .catch((err) => console.error("Error starting tracking:", err));
+  }, []);
 
   useEffect(() => {
     // Open the WebSocket connection
@@ -36,25 +52,37 @@ const SessionTimer = () => {
   }, []);
 
   useEffect(() => {
-    // When the timer starts, mark the session as running
-    sessionStorage.setItem("running", "true");
-
     if (time === 0) {
       handleTimeEnd();
       return;
     }
-
     const timer = setInterval(() => {
       setTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
     }, 1000);
-
     return () => clearInterval(timer);
   }, [time]);
 
+  const stopTracking = () => {
+    // Stop tracking via FastAPI endpoint
+    fetch(`${SERVER_URL}/stop_tracking`, {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => console.log("Tracking stopped:", data))
+      .catch((err) => console.error("Error stopping tracking:", err));
+  };
+
   const handleTimeEnd = () => {
-    // Set session as not running before navigating
+    // Set session as not running before navigating away
     sessionStorage.setItem("running", "false");
+    stopTracking();
     router.push("/analysis");
+  };
+
+  const handleEndSession = () => {
+    sessionStorage.setItem("running", "false");
+    stopTracking();
+    router.push("/");
   };
 
   const formatTime = (seconds: number) => {
@@ -85,10 +113,7 @@ const SessionTimer = () => {
 
       {/* End Session Button */}
       <button
-        onClick={() => {
-          sessionStorage.setItem("running", "false");
-          router.push("/");
-        }}
+        onClick={handleEndSession}
         className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-2xl font-bold absolute bottom-20"
       >
         END SESSION
