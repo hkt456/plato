@@ -1,25 +1,31 @@
 import { ObjectId } from "mongodb";
 import { UserService } from "../services/UserService";
 import { UserServiceImpl } from "../services/UserServiceImpl";
+import { UserDocument } from "./UserDocument";
+import { ServiceFactory } from "../services/ServiceFactory";
 
-export class User {
+export class User{
 
-    private static userService: UserService;
-    private userId: ObjectId | undefined;
+    private userService?: UserService;
+    private userId: string;
     private username: string;
     private password: string;
     private email: string;
     private createdAt: Date;
 
-    constructor(username: string, password: string, email: string, createdAt: Date, userId?: ObjectId) {
-        this.userId = userId;
+    constructor(username: string, password: string, email: string, createdAt: Date, userId?: string) {
+        if (!userId){
+            this.userId = new ObjectId().toHexString();
+        }
+        else this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
         this.createdAt = createdAt;
     }
 
-    public getUserId(): ObjectId | undefined {
+
+    public getUserId(): string {
         return this.userId;
     }
 
@@ -56,6 +62,9 @@ export class User {
     }
 
     public async save() {
-        User.userService.save(this);
+        if (!this.userService) {
+            this.userService = await ServiceFactory.getUserService();
+        }
+        this.userService.save(this);
     }
 }
