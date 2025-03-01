@@ -5,55 +5,50 @@ import { useRouter } from "next/navigation";
 
 const SessionTimer = () => {
   const router = useRouter();
-  const [time, setTime] = useState(60); // 60 seconds for testing
+  const [time, setTime] = useState(60); // 3 seconds for testing
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    // Open the WebSocket connection
-    const ws = new WebSocket("ws://localhost:8000/video");
+    const ws = new WebSocket("ws://localhost:8000/video"); 
 
     ws.onopen = () => {
       console.log("WebSocket connected to /video");
     };
 
+    // Called whenever the server sends a message (base64-encoded frame)
     ws.onmessage = (event) => {
       const base64Data = event.data as string;
       setImgSrc(`data:image/jpeg;base64,${base64Data}`);
     };
 
+    // Called if the WebSocket is closed or an error occurs
     ws.onclose = () => {
       console.log("WebSocket connection closed");
     };
-
     ws.onerror = (err) => {
       console.error("WebSocket error:", err);
     };
 
-    // Clean up on unmount
+    // Cleanup function when the component unmounts
     return () => {
       ws.close();
     };
   }, []);
 
   useEffect(() => {
-    // When the timer starts, mark the session as running
-    sessionStorage.setItem("running", "true");
-
+    // -- 2. Session timer logic
     if (time === 0) {
       handleTimeEnd();
       return;
     }
-
     const timer = setInterval(() => {
       setTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
     }, 1000);
-
     return () => clearInterval(timer);
   }, [time]);
 
   const handleTimeEnd = () => {
-    // Set session as not running before navigating
-    sessionStorage.setItem("running", "false");
+    // This triggers navigation to /analysis when the timer reaches 0
     router.push("/analysis");
   };
 
@@ -83,12 +78,9 @@ const SessionTimer = () => {
         <p className="mt-24 text-xl">Connecting to camera feed...</p>
       )}
 
-      {/* End Session Button */}
+      {/* END SESSION Button */}
       <button
-        onClick={() => {
-          sessionStorage.setItem("running", "false");
-          router.push("/");
-        }}
+        onClick={() => router.push("/")}
         className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-2xl font-bold absolute bottom-20"
       >
         END SESSION
@@ -98,4 +90,3 @@ const SessionTimer = () => {
 };
 
 export default SessionTimer;
-
