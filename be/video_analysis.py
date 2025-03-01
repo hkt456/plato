@@ -112,8 +112,8 @@ class VideoAnalysis:
                         phone_duration += duration
 
                     # d) Draw debug text on the frame
-                    label_text_1 = f"Humpbacked: {y_state} \t Phone using: {phone_using}"
-                    label_text_2 = f"Wrong dist.: {wrong_dist}, \t Leaning: {leaning_state}"
+                    label_text_1 = f"Humpbacked: {self.y_state} \t Phone using: {self.phone_using}"
+                    label_text_2 = f"Wrong dist.: {self.wrong_dist}, \t Leaning: {self.leaning_state}"
 
                     cv2.putText(processed_frame, label_text_1, (20, 50),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
