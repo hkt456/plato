@@ -15,6 +15,7 @@ matplotlib = "^3.10.1"
 python-dotenv = "^1.0.1"
 ultralytics = "^8.3.81"
 opencv-python = "^4.11.0.86"
+groq = "^0.18.0"
 
 
 [build-system]

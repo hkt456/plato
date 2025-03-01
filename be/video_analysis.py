@@ -23,8 +23,12 @@ class VideoAnalysis:
     and saving session summaries.
     """
     def __init__(self):
-        # We'll store the latest webcam frame here
+        # We'll store the latest webcam frame here and current states
         self.frame = None
+        self.y_state = False
+        self.wrong_dist = False
+        self.leaning_state = False
+        self.phone_using = False
 
     def capture_frames(self, cap, frame_lock):
         """
@@ -64,8 +68,8 @@ class VideoAnalysis:
         ).start()
 
         # 4) Initialize posture durations
+        self.y_state, self.wrong_dist, self.leaning_state, self.phone_using = False, False, False, False
         y_duration, wrong_duration, leaning_duration, phone_duration = 0, 0, 0, 0
-        y_state, wrong_dist, leaning_state = False, False, False
 
         # (Optional) If you want to limit session time, track start_session and do a while with a time check
         # For now, we'll run indefinitely until the WebSocket or camera fails.
@@ -82,12 +86,12 @@ class VideoAnalysis:
                         continue
 
                     # a) Detect phone usage in the current frame
-                    processed_frame, phone_using = phone_detection(self.frame)
+                    processed_frame, self.phone_using = phone_detection(self.frame)
 
                     # b) Detect posture
                     #    'frame_processing' must be the version that does NOT return immediately
                     #    after the first keypoint (no early 'return').
-                    processed_frame, y_state, wrong_dist, leaning_state = frame_processing(
+                    processed_frame, self.y_state, self.wrong_dist, self.leaning_state = frame_processing(
                         processed_frame,
                         y_std, eye_std, angle_std, y_tolerance,
                         eye_tolerance=0.3,
@@ -98,13 +102,13 @@ class VideoAnalysis:
                     duration = time.time() - start_time
 
                     # c) Update posture durations
-                    if y_state:
+                    if self.y_state:
                         y_duration += duration
-                    if wrong_dist:
+                    if self.wrong_dist:
                         wrong_duration += duration
-                    if leaning_state:
+                    if self.leaning_state:
                         leaning_duration += duration
-                    if phone_using:
+                    if self.phone_using:
                         phone_duration += duration
 
                     # d) Draw debug text on the frame
@@ -139,3 +143,5 @@ class VideoAnalysis:
         with open(save_file, "w") as file:
             json.dump(total_durations, file, indent=4)
 
+    async def get_current_state(self):
+        return self.y_state, self.wrong_dist, self.leaning_state, self.phone_using

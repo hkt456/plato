@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import NavigationContent from "@/interfaces/NavigationContent";
 import StartSessionButton from "@/components/StartSessionButton";
 const navContents: NavigationContent[] = [
-  { name: "Insights", link: "projects" },
+  { name: "Insights", link: "/summary" },
 ];
 
 const Home = () => {

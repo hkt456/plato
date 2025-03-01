@@ -48,8 +48,8 @@ const SessionTimer = () => {
   }, [time]);
 
   const handleTimeEnd = () => {
-    // This triggers navigation to /analysis when the timer reaches 0
-    router.push("/analysis");
+    // This triggers navigation to /summary when the timer reaches 0
+    router.push("/summary");
   };
 
   const formatTime = (seconds: number) => {
