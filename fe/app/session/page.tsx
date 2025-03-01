@@ -9,7 +9,7 @@ const SessionTimer = () => {
   const router = useRouter();
 
   // Basic state
-  const [time, setTime] = useState(10); // for testing
+  const [time, setTime] = useState(40); // for testing
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   // On mount, start tracking + open the WebSocket
@@ -40,7 +40,7 @@ const SessionTimer = () => {
     };
 
     ws.onerror = (err) => {
-      console.error("WebSocket error:", err);
+      //
     };
 
     // Cleanup on unmount: close WebSocket and stop tracking

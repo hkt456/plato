@@ -3,7 +3,7 @@ import json
 
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse
 
 # from app import get_standard, phone_detection, frame_processing  # Now handled in video_analysis.py
 from tracker import ActiveTabTracker, tracking_loop
@@ -43,18 +43,18 @@ async def video_stream(websocket: WebSocket):
     await video_analysis.work_tracking(websocket)
 
 @app.get("/current_state")
-async def get_current_state():
+def get_current_state():
     """
     Return the current posture states (humpbacked, wrong distance, shoulder deviated, and phone using)
     of user as JSON file.
     """
     y_state, wrong_dist, leaning_state, phone_using = video_analysis.get_current_state()
-    return JSONResponse({
+    return {
         "Humpbacked": y_state,
         "Wrong distance": wrong_dist,
         "Shoulder deviated": leaning_state,
         "Phone usage": phone_using
-    })
+    }
 
 @app.get("/get_summary")
 def get_summary(JSON_FILE_PATH: str = JSON_FILE_PATH):
@@ -162,7 +162,7 @@ async def generate_analysis_report(request: Request):
     Generate an analysis report using:
       - The latest tracker data from /usage_json
       - The pose data from /get_summary
-      - A session goal from the equest body
+      - A session goal from the request body
 
     Expects JSON payload:
     {

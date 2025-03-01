@@ -107,7 +107,7 @@ const PostureUI = () => {
         {error ? (
           <p className="text-red-500">{error}</p>
         ) : report ? (
-          <ReactMarkdown className="prose">{report}</ReactMarkdown>
+          <ReactMarkdown className="prose prose-lg leading-relaxed break-words">{report}</ReactMarkdown>
         ) : (
           <p>Loading...</p>
         )}
