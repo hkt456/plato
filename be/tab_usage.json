@@ -1,14 +1,22 @@
 {
-  "https://chatgpt.com/c/67c2317b-594c-800b-b5d8-014c3e4fbc0b": {
-    "time": 3.0005178451538086,
-    "title": "https://chatgpt.com/c/67c2317b-594c-800b-b5d8-014c3e4fbc0b"
+  "http://localhost:8000/usage": {
+    "time": 6.000582695007324,
+    "title": "http://localhost:8000/usage"
   },
-  "http://127.0.0.1:8000/usage": {
-    "time": 8.001509189605713,
-    "title": "http://127.0.0.1:8000/usage"
+  "https://github.com/AnotherYearWasted/plato/tree/main": {
+    "time": 4.000392436981201,
+    "title": "https://github.com/AnotherYearWasted/plato/tree/main"
   },
-  "http://127.0.0.1:8000/usage_json": {
-    "time": 2.000476598739624,
-    "title": "http://127.0.0.1:8000/usage_json"
+  "http://localhost:8000/usage_json": {
+    "time": 2.000192880630493,
+    "title": "http://localhost:8000/usage_json"
+  },
+  "http://localhost:3000/session": {
+    "time": 2.000176429748535,
+    "title": "http://localhost:3000/session"
+  },
+  "https://chatgpt.com/c/67c3419b-74ac-800b-89f1-41dc15e22521": {
+    "time": 2.000140428543091,
+    "title": "https://chatgpt.com/c/67c3419b-74ac-800b-89f1-41dc15e22521"
   }
 }
