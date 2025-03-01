@@ -10,6 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from AI.LLM.groq_llm import GroqLLMClient
 
+
 class SessionAnalysis:
     def __init__(self, tracker_data: dict, pose_data: dict, session_goal: str):
         """
